@@ -19,6 +19,7 @@
 
 using namespace std;
 
+/* Optimiser parameters */
 class OPTIMISATION {
 public:
 	bool enabled = false;
@@ -28,6 +29,7 @@ public:
 	int iterations = 1000;
 };
 
+/* Load configuration from stream */
 CONFIGURATION *loadConfiguration(OPTIMISATION &opts, istream & data)
 {
 	CONFIGURATION *config = 0;
@@ -48,7 +50,7 @@ CONFIGURATION *loadConfiguration(OPTIMISATION &opts, istream & data)
 			continue;
 		}
 		reallines++;
-		int c = sscanf(line, "%[^=]=%*[ \t]%s", key, value);
+		int c = sscanf(line, "%[^=]=%*[ ]%[][()a-zA-Z0-9 ,;.+-]", key, value);
 		if (c != 2) {
 			cerr << "Failed to parse line #" << linenum << ": " << line << endl;
 			continue;
@@ -66,9 +68,10 @@ CONFIGURATION *loadConfiguration(OPTIMISATION &opts, istream & data)
 			keylen--;
 		key[keylen] = 0;
 
+		/* Debug dump */
 		cerr << "\t{" << key << "} = '" << value << "'" << endl;
 
-		/* Strut count */
+		/* Strut count (MUST be first line) */
 		bool sc = strsame(key, "strut count");
 		if (sc && reallines == 1) {
 			config = new CONFIGURATION(parseInt(value));
@@ -166,6 +169,7 @@ CONFIGURATION *loadConfiguration(OPTIMISATION &opts, istream & data)
 	return config;
 }
 
+/* No-op destructor */
 struct noop {
 
 	void operator () (istream * ptr) const
@@ -173,8 +177,10 @@ struct noop {
 	}
 };
 
+/* Entry point*/
 int main(int argc, char** argv)
 {
+	/* Get input stream */
 	char* filename = 0;
 	shared_ptr<istream> input;
 	if (argc == 2) {
@@ -190,13 +196,16 @@ int main(int argc, char** argv)
 		input.reset(&cin, noop());
 		cerr << "Configuration from STDIN" << endl;
 	}
+	/* Parse input stream */
 	OPTIMISATION opts;
 	CONFIGURATION *config = loadConfiguration(opts, *input.get());
 	if (!config) {
 		return 1;
 	}
+	/* Configure & solve platform */
 	config->configure();
 	config->solve();
+	/* Optimise solution */
 	if (opts.enabled) {
 		config->optimise(opts.weights, opts.jumpsize, opts.iterations, opts.delta);
 	}
@@ -207,14 +216,21 @@ int main(int argc, char** argv)
 			cout << "\t";
 		cout << config->s[i].motor_angle;
 	}
-	cout << endl << endl;
+	cout << endl;
+	cerr << endl;
+	/* Epsilon */
 	cerr << "Epsilon: " << endl;
-	cout << config->epsilon() << endl << endl;
+	cout << config->epsilon() << endl;
+	cerr << endl;
+	/* Displacement */
 	cerr << "Displacement: " << endl;
-	cout << config->platform_displacement[0] << "\t" << config->platform_displacement[1] << "\t" << config->platform_displacement[2] << endl << endl;
+	cout << config->platform_displacement[0] << "\t" << config->platform_displacement[1] << "\t" << config->platform_displacement[2] << endl;
+	cerr << endl;
+	/* Orientation */
 	cerr << "Orientation (pitch, yaw, roll): " << endl;
-	cout << config->pitch << "\t" << config->yaw << "\t" << config->roll << endl << endl;
+	cout << config->pitch << "\t" << config->yaw << "\t" << config->roll << endl;
+	cerr << endl;
+	/* Clean up and exit */
 	delete config;
 	return 0;
 }
-

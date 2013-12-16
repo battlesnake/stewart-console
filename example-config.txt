@@ -1,0 +1,80 @@
+# Comments are denoted by a hash at the start of a line
+
+# Vectors and arrays are specified as a list of numbers in square brackets:
+# [ 1, 2, 3, 4, 5 ] or [ 1 2 3 4 5 ].  Either commas, spaces or a combination of
+# both can be used to separate entries, but the spaces between the numbers and
+# the square brackets are MANDATORY.
+
+# The displacement in this example intentionally leads to an impossible
+# geometry, resulting in a non-zero epsilon.  By enabling optimisation near
+# the end of this file "optimisation enabled = yes" you can have the optimiser
+# tweak the configuration to find a realistic solution.  Parameters with a
+# large optimisation weight will be altered considerably more by the optimiser
+# than parameters with small optimisation weights.  A zero optimisation weight
+# prevents the optimiser from modifying a certain parameter, even if it means
+# that no realistic solutions are possible as a result of the constraint.
+
+# The base is in the XZ plane, the Y axis runs orthogonal to the base
+
+# The number of struts.  "strut count" MUST be first specified value in the file
+strut count = 6
+
+# Strut length
+strut length = 250
+
+# Length of arm between motor and strut
+strut arm = 20
+
+# Base bounding ellipse
+base major radius = 150
+base minor radius = 150
+
+# Base shape (ellipse / polygon vertex / polygon edge)
+base shape = polygon edge
+
+# Top bounding ellipse
+top major radius = 100
+top minor radius = 100
+
+# Top shape (ellipse / polygon vertex / polygon edge)
+top shape = polygon edge
+
+# Displacement vector of centre of top from centre of base
+displacement = [ 0, 270, 0 ]
+
+# Displacement can also be specified as right/left/up/down/away/towards
+displacement up = 270
+
+# Orientation (Euler angles)
+orientation = [ 0.3, 0.2, 0 ]
+
+# Orientation can also be specified as pitch/yaw/roll
+orientation roll = -0.1
+
+
+
+#############
+# Optimiser #
+#############
+
+# Optimiser enabled (yes/no)
+optimisation enabled = no
+
+# Number of times to run the optimiser
+optimisation iterations = 1000
+
+# Scale factor for steps to take with each iteration
+optimisation step size = 0.1
+
+# Delta to use for estimating gradients
+optimisation gradient delta = 0.05
+
+# Weight coefficients for calculating step sizes of individual parameters
+# pitch/yaw/roll/x/y/z
+optimisation weight = [ 0.01, 0.01, 0.03, 0.2, 1.0, 0.2 ]
+
+# The angle weights can be specified separately
+optimisation orientation weight = [ 0.1, 0.01, 0.03 ]
+
+# The displacement weights can be specified separately
+optimisation displacement weight = [ 0.2, 1.0, 0.2 ]
